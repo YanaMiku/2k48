@@ -2,19 +2,21 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Merge Puzzle Game</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Merge Puzzle Game - Ultimate Edition</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
     }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-      padding: 1.5rem;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 1rem;
       min-height: 100vh;
       display: flex;
       justify-content: center;
@@ -23,78 +25,108 @@
 
     .container {
       width: 100%;
-      max-width: 600px;
-      background: white;
-      border-radius: 16px;
-      padding: 2rem;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+      max-width: min(90vw, 800px);
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 24px;
+      padding: 1.5rem;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
     }
 
     .header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 2rem;
+      margin-bottom: 1.5rem;
       flex-wrap: wrap;
       gap: 1rem;
     }
 
     .title {
-      font-size: 28px;
-      font-weight: 600;
+      font-size: clamp(20px, 5vw, 28px);
+      font-weight: 700;
       color: #1a1a1a;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .title i {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      font-size: 1.2em;
     }
 
     .stats {
       display: flex;
-      gap: 1rem;
+      gap: 0.75rem;
     }
 
     .stat-box {
-      background: #f8f9fa;
-      border: 1px solid #e0e0e0;
-      border-radius: 8px;
-      padding: 0.75rem 1rem;
-      min-width: 100px;
+      background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+      border-radius: 12px;
+      padding: 0.5rem 1rem;
+      min-width: 80px;
       text-align: center;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     }
 
     .stat-label {
-      font-size: 12px;
-      color: #666;
+      font-size: 11px;
+      color: #6c757d;
       margin-bottom: 0.25rem;
-      font-weight: 500;
+      font-weight: 600;
+      letter-spacing: 0.5px;
     }
 
     .stat-value {
-      font-size: 24px;
-      font-weight: 600;
-      color: #1a1a1a;
+      font-size: clamp(18px, 4vw, 24px);
+      font-weight: 700;
+      color: #495057;
     }
 
     .game-area {
-      background: white;
-      border: 1px solid #e0e0e0;
-      border-radius: 12px;
+      background: #f8f9fa;
+      border-radius: 16px;
       padding: 1rem;
       margin-bottom: 1.5rem;
       touch-action: none;
       user-select: none;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02), 0 4px 12px rgba(0, 0, 0, 0.1);
     }
 
     .grid {
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
       gap: 8px;
       aspect-ratio: 1;
-      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .grid-4 {
+      grid-template-columns: repeat(4, 1fr);
+    }
+    .grid-5 {
+      grid-template-columns: repeat(5, 1fr);
+    }
+    .grid-6 {
+      grid-template-columns: repeat(6, 1fr);
+    }
+    .grid-7 {
+      grid-template-columns: repeat(7, 1fr);
+    }
+    .grid-8 {
+      grid-template-columns: repeat(8, 1fr);
     }
 
     .cell {
-      background: #efefef;
-      border-radius: 8px;
+      background: #e9ecef;
+      border-radius: 12px;
       position: relative;
       min-width: 0;
+      transition: all 0.2s ease;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
     }
 
     .tile {
@@ -104,11 +136,12 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: 600;
-      border-radius: 8px;
-      font-size: 24px;
-      cursor: move;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      font-weight: 700;
+      border-radius: 12px;
+      font-size: clamp(14px, 4vw, 24px);
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      transition: transform 0.05s linear;
     }
 
     .tile {
@@ -130,7 +163,7 @@
       100% { transform: scale(1); }
     }
 
-    /* Tile colors with gradients */
+    /* Tile colors */
     .tile-1 { background: linear-gradient(135deg, #FFE4B5, #FFD699); color: #8B4513; }
     .tile-2 { background: linear-gradient(135deg, #FFD699, #FFC87D); color: #654321; }
     .tile-4 { background: linear-gradient(135deg, #FFC87D, #FFB347); color: #704214; }
@@ -143,6 +176,8 @@
     .tile-512 { background: linear-gradient(135deg, #E24B4A, #A32D2D); color: white; }
     .tile-1024 { background: linear-gradient(135deg, #D85A30, #993C1D); color: white; }
     .tile-2048 { background: linear-gradient(135deg, #F0997B, #D85A30); color: white; }
+    .tile-4096 { background: linear-gradient(135deg, #FF6B6B, #C92A2A); color: white; }
+    .tile-8192 { background: linear-gradient(135deg, #F06595, #C2255C); color: white; }
 
     .controls {
       display: flex;
@@ -151,21 +186,100 @@
       margin-bottom: 1rem;
     }
 
-    button {
-      padding: 0.75rem 1.5rem;
+    .controls > * {
+      flex: 1;
+      min-width: 100px;
+    }
+
+    .dropdown-container {
+      position: relative;
+      flex: 1;
+    }
+
+    .dropdown-btn {
+      width: 100%;
+      padding: 0.75rem 1rem;
       font-size: 14px;
       font-weight: 600;
-      border: 1px solid #ddd;
+      border: 1px solid #dee2e6;
       background: white;
-      border-radius: 8px;
+      border-radius: 12px;
       cursor: pointer;
-      color: #1a1a1a;
       transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    .dropdown-btn i {
+      transition: transform 0.3s ease;
+    }
+
+    .dropdown-btn.active i {
+      transform: rotate(180deg);
+    }
+
+    .dropdown-menu {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      right: 0;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+      z-index: 100;
+      max-height: 0;
+      opacity: 0;
+      transition: all 0.3s ease;
+      visibility: hidden;
+    }
+
+    .dropdown-menu.show {
+      max-height: 300px;
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .dropdown-item {
+      padding: 0.75rem 1rem;
+      cursor: pointer;
+      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 14px;
+    }
+
+    .dropdown-item:hover {
+      background: #f8f9fa;
+    }
+
+    .dropdown-item.active {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+    }
+
+    button {
+      padding: 0.75rem 1rem;
+      font-size: 14px;
+      font-weight: 600;
+      border: none;
+      background: white;
+      border-radius: 12px;
+      cursor: pointer;
+      color: #495057;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      border: 1px solid #dee2e6;
     }
 
     button:hover {
       background: #f8f9fa;
-      border-color: #999;
       transform: translateY(-2px);
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
@@ -175,13 +289,17 @@
     }
 
     .hint {
-      font-size: 13px;
-      color: #666;
+      font-size: 12px;
+      color: #6c757d;
       text-align: center;
       background: #f8f9fa;
       padding: 0.75rem;
-      border-radius: 8px;
+      border-radius: 12px;
       margin-top: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
     }
 
     .modal {
@@ -191,10 +309,16 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(0, 0, 0, 0.5);
+      background: rgba(0, 0, 0, 0.6);
       z-index: 1000;
       align-items: center;
       justify-content: center;
+      animation: fadeIn 0.2s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
 
     .modal.show {
@@ -203,82 +327,99 @@
 
     .modal-content {
       background: white;
-      border-radius: 16px;
+      border-radius: 24px;
       padding: 2rem;
       text-align: center;
-      max-width: 400px;
+      max-width: 90%;
+      width: 400px;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(50px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
     }
 
     .modal-title {
-      font-size: 32px;
-      font-weight: 600;
+      font-size: 28px;
+      font-weight: 700;
       margin-bottom: 1rem;
       color: #1a1a1a;
     }
 
     .modal-text {
-      font-size: 16px;
-      color: #666;
+      font-size: 14px;
+      color: #6c757d;
       margin-bottom: 1.5rem;
     }
 
     .modal-score {
       font-size: 48px;
       font-weight: 700;
-      color: #378ADD;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
       margin-bottom: 2rem;
     }
 
-    .modal-content button {
-      width: 100%;
-      margin-bottom: 0.75rem;
+    .modal-buttons {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .modal-buttons button {
+      flex: 1;
     }
 
     .modal-stats {
       margin-top: 1.5rem;
       padding-top: 1.5rem;
-      border-top: 1px solid #e0e0e0;
+      border-top: 1px solid #e9ecef;
       font-size: 13px;
-      color: #999;
+      color: #adb5bd;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 1rem;
+      }
+      
+      .grid {
+        gap: 6px;
+      }
+      
+      .cell {
+        border-radius: 8px;
+      }
+      
+      .tile {
+        border-radius: 8px;
+        font-size: clamp(12px, 3.5vw, 20px);
+      }
+      
+      .stat-box {
+        padding: 0.4rem 0.75rem;
+        min-width: 70px;
+      }
     }
 
     @media (max-width: 480px) {
-      .container {
-        padding: 1.5rem;
-      }
-
-      body {
-        padding: 1rem;
-      }
-
-      .title {
-        font-size: 24px;
-      }
-
-      .header {
-        margin-bottom: 1.5rem;
-      }
-
-      .stat-box {
-        flex: 1;
-        min-width: 0;
-      }
-
-      .game-area {
-        padding: 0.75rem;
-      }
-
-      .tile {
-        font-size: 18px;
-      }
-
       .controls {
         flex-direction: column;
       }
-
-      button {
-        flex: 1;
+      
+      .controls > * {
+        min-width: auto;
+      }
+      
+      .grid {
+        gap: 4px;
+      }
+      
+      .modal-content {
+        padding: 1.5rem;
       }
     }
   </style>
@@ -287,14 +428,17 @@
 
 <div class="container">
   <div class="header">
-    <div class="title">🎮 Merge Puzzle</div>
+    <div class="title">
+      <i class="fas fa-puzzle-piece"></i>
+      <span>Merge Puzzle</span>
+    </div>
     <div class="stats">
       <div class="stat-box">
-        <div class="stat-label">Skor</div>
+        <div class="stat-label"><i class="fas fa-star"></i> SKOR</div>
         <div class="stat-value" id="score">0</div>
       </div>
       <div class="stat-box">
-        <div class="stat-label">Moves</div>
+        <div class="stat-label"><i class="fas fa-arrows-alt"></i> MOVES</div>
         <div class="stat-value" id="moves">0</div>
       </div>
     </div>
@@ -305,35 +449,77 @@
   </div>
 
   <div class="controls">
-    <button id="newGameBtn">🔄 Game Baru</button>
-    <button id="undoBtn">↩️ Undo</button>
+    <div class="dropdown-container">
+      <button class="dropdown-btn" id="dropdownBtn">
+        <span><i class="fas fa-border-all"></i> Grid: 5x5</span>
+        <i class="fas fa-chevron-down"></i>
+      </button>
+      <div class="dropdown-menu" id="dropdownMenu">
+        <div class="dropdown-item" data-size="4">
+          <span>4 x 4</span>
+          <i class="fas fa-th"></i>
+        </div>
+        <div class="dropdown-item active" data-size="5">
+          <span>5 x 5</span>
+          <i class="fas fa-th"></i>
+        </div>
+        <div class="dropdown-item" data-size="6">
+          <span>6 x 6</span>
+          <i class="fas fa-th"></i>
+        </div>
+        <div class="dropdown-item" data-size="7">
+          <span>7 x 7</span>
+          <i class="fas fa-th"></i>
+        </div>
+        <div class="dropdown-item" data-size="8">
+          <span>8 x 8</span>
+          <i class="fas fa-th"></i>
+        </div>
+      </div>
+    </div>
+    <button id="newGameBtn"><i class="fas fa-sync-alt"></i> Game Baru</button>
+    <button id="undoBtn"><i class="fas fa-undo-alt"></i> Undo</button>
   </div>
 
   <div class="hint">
-    💡 Geser dengan jari (mobile) atau drag dengan mouse (desktop) untuk memindahkan ubin. Gabungkan angka yang sama!
+    <i class="fas fa-fingerprint"></i>
+    <span>Geser / Drag ubin untuk menggabungkan angka yang sama</span>
+    <i class="fas fa-mouse-pointer"></i>
   </div>
 </div>
 
 <div class="modal" id="gameOverModal">
   <div class="modal-content">
-    <div class="modal-title">🎮 Game Over!</div>
-    <div class="modal-text">Grid penuh dan tidak ada lagi kemungkinan merge</div>
+    <div class="modal-title"><i class="fas fa-trophy"></i> Game Over!</div>
+    <div class="modal-text">Grid penuh dan tidak ada kemungkinan merge lagi</div>
     <div class="modal-score" id="finalScore">0</div>
-    <button id="restartBtn">🎮 Main Lagi</button>
+    <button id="restartBtn"><i class="fas fa-play"></i> Main Lagi</button>
     <div class="modal-stats">
-      Total Gerakan: <span id="finalMoves">0</span><br>
-      Nilai Tertinggi: <span id="highestTile">2</span>
+      <i class="fas fa-arrows-alt"></i> Total Gerakan: <span id="finalMoves">0</span><br>
+      <i class="fas fa-chart-line"></i> Nilai Tertinggi: <span id="highestTile">2</span>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="confirmModal">
+  <div class="modal-content">
+    <div class="modal-title"><i class="fas fa-question-circle"></i> Konfirmasi</div>
+    <div class="modal-text">Mengubah ukuran grid akan mereset permainan. Lanjutkan?</div>
+    <div class="modal-buttons">
+      <button id="confirmYesBtn"><i class="fas fa-check"></i> Ya, Reset</button>
+      <button id="confirmNoBtn"><i class="fas fa-times"></i> Batal</button>
     </div>
   </div>
 </div>
 
 <script>
-  const GRID_SIZE = 5;
   const SPAWN_VALUES = [1, 2];
-
+  
   class Game {
-    constructor() {
-      this.grid = Array(GRID_SIZE * GRID_SIZE).fill(0);
+    constructor(size = 5) {
+      this.size = size;
+      this.gridSize = size * size;
+      this.grid = Array(this.gridSize).fill(0);
       this.score = 0;
       this.moves = 0;
       this.history = [];
@@ -361,22 +547,22 @@
       this.merged.clear();
       
       if (direction === 'left' || direction === 'right') {
-        for (let row = 0; row < GRID_SIZE; row++) {
-          const line = this.grid.slice(row * GRID_SIZE, (row + 1) * GRID_SIZE);
+        for (let row = 0; row < this.size; row++) {
+          const line = this.grid.slice(row * this.size, (row + 1) * this.size);
           const newLine = this.moveLine(line, direction === 'left');
-          for (let col = 0; col < GRID_SIZE; col++) {
-            this.grid[row * GRID_SIZE + col] = newLine[col];
+          for (let col = 0; col < this.size; col++) {
+            this.grid[row * this.size + col] = newLine[col];
           }
         }
       } else {
-        for (let col = 0; col < GRID_SIZE; col++) {
+        for (let col = 0; col < this.size; col++) {
           const line = [];
-          for (let row = 0; row < GRID_SIZE; row++) {
-            line.push(this.grid[row * GRID_SIZE + col]);
+          for (let row = 0; row < this.size; row++) {
+            line.push(this.grid[row * this.size + col]);
           }
           const newLine = this.moveLine(line, direction === 'up');
-          for (let row = 0; row < GRID_SIZE; row++) {
-            this.grid[row * GRID_SIZE + col] = newLine[row];
+          for (let row = 0; row < this.size; row++) {
+            this.grid[row * this.size + col] = newLine[row];
           }
         }
       }
@@ -413,7 +599,7 @@
       
       newLine = newLine.filter(v => v !== 0);
       
-      while (newLine.length < GRID_SIZE) {
+      while (newLine.length < this.size) {
         newLine.push(0);
       }
       
@@ -428,13 +614,13 @@
     isGameOver() {
       if (this.grid.some(v => v === 0)) return false;
       
-      for (let row = 0; row < GRID_SIZE; row++) {
-        for (let col = 0; col < GRID_SIZE; col++) {
-          const idx = row * GRID_SIZE + col;
+      for (let row = 0; row < this.size; row++) {
+        for (let col = 0; col < this.size; col++) {
+          const idx = row * this.size + col;
           const val = this.grid[idx];
           
-          if (col < GRID_SIZE - 1 && this.grid[idx + 1] === val) return false;
-          if (row < GRID_SIZE - 1 && this.grid[idx + GRID_SIZE] === val) return false;
+          if (col < this.size - 1 && this.grid[idx + 1] === val) return false;
+          if (row < this.size - 1 && this.grid[idx + this.size] === val) return false;
         }
       }
       return true;
@@ -455,29 +641,41 @@
     }
 
     reset() {
-      this.grid = Array(GRID_SIZE * GRID_SIZE).fill(0);
+      this.grid = Array(this.gridSize).fill(0);
       this.score = 0;
       this.moves = 0;
       this.history = [];
       this.merged.clear();
-      document.getElementById('gameOverModal').classList.remove('show');
+      this.init();
+    }
+
+    changeSize(newSize) {
+      this.size = newSize;
+      this.gridSize = newSize * newSize;
+      this.grid = Array(this.gridSize).fill(0);
+      this.score = 0;
+      this.moves = 0;
+      this.history = [];
+      this.merged.clear();
       this.init();
     }
 
     render() {
-      const grid = document.getElementById('grid');
-      grid.innerHTML = '';
+      const gridElement = document.getElementById('grid');
+      gridElement.className = `grid grid-${this.size}`;
+      gridElement.innerHTML = '';
       
-      for (let i = 0; i < GRID_SIZE * GRID_SIZE; i++) {
+      for (let i = 0; i < this.gridSize; i++) {
         const cell = document.createElement('div');
         cell.className = 'cell';
-        grid.appendChild(cell);
+        gridElement.appendChild(cell);
         
         const value = this.grid[i];
         
         if (value > 0) {
           const tile = document.createElement('div');
-          tile.className = `tile tile-${value}`;
+          const tileClass = value <= 8192 ? `tile-${value}` : 'tile-2048';
+          tile.className = `tile ${tileClass}`;
           if (this.merged.has(i)) tile.classList.add('merged');
           tile.textContent = value;
           cell.appendChild(tile);
@@ -489,13 +687,18 @@
     }
   }
 
-  let game = new Game();
+  let game = new Game(5);
   let touchStart = { x: 0, y: 0 };
   let dragStart = { x: 0, y: 0 };
   let isDragging = false;
+  let pendingSizeChange = null;
 
   const gameArea = document.getElementById('gameArea');
+  const dropdownBtn = document.getElementById('dropdownBtn');
+  const dropdownMenu = document.getElementById('dropdownMenu');
+  const confirmModal = document.getElementById('confirmModal');
 
+  // Touch events for mobile
   gameArea.addEventListener('touchstart', (e) => {
     touchStart = { x: e.touches[0].clientX, y: e.touches[0].clientY };
   }, false);
@@ -512,6 +715,7 @@
     }
   }, false);
 
+  // Mouse events for desktop
   gameArea.addEventListener('mousedown', (e) => {
     isDragging = true;
     dragStart = { x: e.clientX, y: e.clientY };
@@ -537,6 +741,7 @@
     }
   }, false);
 
+  // Keyboard events
   document.addEventListener('keydown', (e) => {
     const keyMap = {
       'ArrowLeft': 'left',
@@ -551,6 +756,65 @@
     }
   });
 
+  // Dropdown functionality
+  dropdownBtn.addEventListener('click', () => {
+    dropdownBtn.classList.toggle('active');
+    dropdownMenu.classList.toggle('show');
+  });
+
+  // Close dropdown when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!dropdownBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
+      dropdownBtn.classList.remove('active');
+      dropdownMenu.classList.remove('show');
+    }
+  });
+
+  // Grid size change
+  document.querySelectorAll('.dropdown-item').forEach(item => {
+    item.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const newSize = parseInt(item.dataset.size);
+      
+      if (game.size !== newSize) {
+        pendingSizeChange = newSize;
+        confirmModal.classList.add('show');
+      }
+      
+      dropdownBtn.classList.remove('active');
+      dropdownMenu.classList.remove('show');
+    });
+  });
+
+  // Confirm modal handlers
+  document.getElementById('confirmYesBtn').addEventListener('click', () => {
+    if (pendingSizeChange) {
+      game.changeSize(pendingSizeChange);
+      
+      // Update dropdown button text
+      const btnSpan = dropdownBtn.querySelector('span');
+      btnSpan.innerHTML = `<i class="fas fa-border-all"></i> Grid: ${pendingSizeChange}x${pendingSizeChange}`;
+      
+      // Update active class in dropdown items
+      document.querySelectorAll('.dropdown-item').forEach(item => {
+        if (parseInt(item.dataset.size) === pendingSizeChange) {
+          item.classList.add('active');
+        } else {
+          item.classList.remove('active');
+        }
+      });
+      
+      pendingSizeChange = null;
+    }
+    confirmModal.classList.remove('show');
+  });
+
+  document.getElementById('confirmNoBtn').addEventListener('click', () => {
+    pendingSizeChange = null;
+    confirmModal.classList.remove('show');
+  });
+
+  // Button handlers
   document.getElementById('newGameBtn').addEventListener('click', () => {
     game.reset();
   });
@@ -561,6 +825,20 @@
 
   document.getElementById('restartBtn').addEventListener('click', () => {
     game.reset();
+    document.getElementById('gameOverModal').classList.remove('show');
+  });
+
+  // Close modal when clicking outside
+  confirmModal.addEventListener('click', (e) => {
+    if (e.target === confirmModal) {
+      confirmModal.classList.remove('show');
+    }
+  });
+
+  document.getElementById('gameOverModal').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('gameOverModal')) {
+      document.getElementById('gameOverModal').classList.remove('show');
+    }
   });
 </script>
 
